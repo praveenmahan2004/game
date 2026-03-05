@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Perfect Match • Fill in the Blanks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d0b1a 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1500px;
+            width: 100%;
+            background: rgba(10, 15, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 60px;
+            padding: 25px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .set-indicator {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-size: 1.3em;
+            font-weight: 600;
+            border: 2px solid #ffd700;
+            margin-top: 10px;
+        }
+
+        /* Score Board */
+        .score-board {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-text {
+            color: white;
+            font-size: 1.3em;
+        }
+
+        .hearts-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .heart-icon {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .heart-icon.filled {
+            color: #ff4d6d;
+            filter: drop-shadow(0 0 15px #ff4d6d);
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .reset-btn, .submit-btn {
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #0d0b1a;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .reset-btn:hover, .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 15px 30px rgba(76, 175, 80, 0.6);
+        }
+
+        /* Game Board */
+        .game-board {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin: 20px 0;
+            min-height: 550px;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .column h3 {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 500;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ffd700;
+            text-align: center;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+
+        .card:hover {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            transform: translateX(5px) scale(1.02);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .card.selected {
+            background: rgba(255, 215, 0, 0.25);
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 30px #ffd700;
+        }
+
+        .card.matched {
+            opacity: 0.6;
+            pointer-events: none;
+            filter: grayscale(0.7);
+            border-color: #4CAF50;
+        }
+
+        .card.wrong-matched {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(0.8);
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .card.wrong-attempt {
+            animation: shake 0.5s ease-in-out;
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .subject-card {
+            justify-content: flex-start;
+        }
+
+        .verb-card {
+            justify-content: flex-end;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            margin-right: 15px;
+            border: 2px solid #ffd700;
+        }
+
+        .verb-card .card-icon {
+            margin-right: 0;
+            margin-left: 15px;
+            order: 2;
+        }
+
+        .card-text {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .blank-space {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.4em;
+            letter-spacing: 2px;
+            text-decoration: underline;
+            text-decoration-color: #ffd700;
+            text-decoration-style: wavy;
+        }
+
+        .verb-card .card-text {
+            text-align: right;
+        }
+
+        /* SVG Lines */
+        .lines-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .lines-svg line {
+            stroke-width: 4;
+            stroke-dasharray: 10,10;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .lines-svg line.correct-line {
+            stroke: #ffd700;
+            filter: drop-shadow(0 0 10px #ffd700);
+        }
+
+        .lines-svg line.wrong-line {
+            stroke: #ff4444;
+            filter: drop-shadow(0 0 10px #ff4444);
+        }
+
+        /* Popups */
+        .big-heart {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 250px;
+            z-index: 9999;
+            animation: heartPop 1.5s ease-out forwards;
+            filter: drop-shadow(0 0 60px #ff1493);
+        }
+
+        @keyframes heartPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        .cry-heart {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 200px;
+            z-index: 9999;
+            animation: cryPop 1.5s ease-out forwards;
+            filter: drop-shadow(0 0 50px #4169E1);
+        }
+
+        @keyframes cryPop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            30% { transform: translate(-50%, -50%) scale(1.3) rotate(-5deg); opacity: 1; }
+            60% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; }
+        }
+
+        .marriage-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ffd700, #ff69b4, #00ffff);
+            padding: 50px;
+            border-radius: 70px;
+            z-index: 10000;
+            text-align: center;
+            box-shadow: 0 30px 80px black;
+            border: 5px solid white;
+            animation: popupScale 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .cry-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #4a6b8a, #2c3e50);
+            padding: 40px;
+            border-radius: 60px;
+            z-index: 10000;
+            text-align: center;
+            border: 5px solid #87CEEB;
+            animation: popupScale 0.5s forwards;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #4CAF50, #45a049, #2E7D32);
+            padding: 50px;
+            border-radius: 70px;
+            z-index: 10001;
+            text-align: center;
+            border: 8px solid gold;
+            animation: popupScale 0.6s forwards;
+            max-width: 700px;
+            width: 90%;
+        }
+
+        .finale-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ffd700, #ff1493, #4a90e2, #00ffaa);
+            padding: 60px;
+            border-radius: 100px;
+            z-index: 10001;
+            text-align: center;
+            border: 8px solid white;
+            animation: finaleScale 1s forwards;
+            max-width: 1000px;
+            width: 95%;
+        }
+
+        @keyframes popupScale {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes finaleScale {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .marriage-popup h2 { font-size: 3.5em; color: white; margin: 20px; }
+        .cry-popup h2 { font-size: 3em; color: #87CEEB; }
+        .cry-popup p { font-size: 2em; color: white; }
+        .success-popup h2 { font-size: 3.5em; color: white; }
+        .finale-popup h1 { font-size: 4.5em; color: white; }
+
+        .rule-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 30px;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cry-face {
+            font-size: 5em;
+            margin: 20px;
+            animation: cryBounce 1s infinite;
+        }
+
+        @keyframes cryBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Instructions */
+        .instructions {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 50px;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Wrong match badge */
+        .wrong-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 0 10px #ff4444;
+            z-index: 20;
+        }
+
+        /* Verb count badge */
+        .verb-count {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <h1>📝 FILL IN THE BLANKS • GRAMMAR WEDDING</h1>
+        <div class="set-indicator" id="setIndicator">SET 1</div>
+    </div>
+
+    <div class="score-board">
+        <div class="score">
+            <span class="score-text">Matches:</span>
+            <div class="hearts-container" id="heartsContainer"></div>
+            <span class="score-text" id="matchCounter">0 / 5</span>
+        </div>
+        <div class="button-group">
+            <button class="submit-btn" onclick="showSuccessPopup()">
+                <span>✅</span> SUBMIT
+            </button>
+            <button class="reset-btn" onclick="nextSet()">
+                <span>🔄</span> NEXT SET
+            </button>
+        </div>
+    </div>
+
+    <div class="game-board" id="gameBoard">
+        <div class="column">
+            <h3>📝 COMPLETE THE SENTENCE <span class="verb-count">(5 sentences)</span></h3>
+            <div id="subjectsContainer"></div>
+        </div>
+        <div class="column">
+            <h3>💘 CHOOSE THE VERB <span class="verb-count">(8 verbs)</span></h3>
+            <div id="verbsContainer"></div>
+        </div>
+        <svg class="lines-svg" id="lineSvg"></svg>
+    </div>
+
+    <div class="instructions">
+        <div class="instruction-item"><i>1️⃣</i> Click sentence with _____</div>
+        <div class="instruction-item"><i>2️⃣</i> Click verb to fill blank</div>
+        <div class="instruction-item"><i>💕</i> Correct = Wedding + Gold Line</div>
+        <div class="instruction-item"><i>😢</i> Wrong = Red Line + Disabled</div>
+        <div class="instruction-item"><i>⚠️</i> 8 verbs • Only 5 correct • Tricky!</div>
+    </div>
+    <div class="footer">✨ 4 Sets • 5 Sentences • 8 Verbs Each • Find the right match! ✨</div>
+</div>
+
+<script>
+    // ==================== 4 SETS with 5 subjects and 8 verbs each ====================
+    const gameSets = {
+        // SET 1 - 8 verbs (5 correct, 3 decoys)
+        set1: {
+            name: "SET 1",
+            subjects: [
+                { text: 'The team ______ working on the project.', icon: '👥', rule: 'RULE: Collective noun → singular verb (is)' },
+                { text: 'Everyone ______ completed the training.', icon: '🌍', rule: 'RULE: Indefinite pronoun → always singular (has)' },
+                { text: 'The managers ______ approved the budget.', icon: '👔', rule: 'RULE: Plural subject → plural verb (have)' },
+                { text: 'The list of requirements ______ updated.', icon: '📋', rule: 'RULE: Ignore modifiers → subject "List" is singular (was)' },
+                { text: 'The jury ______ reached a verdict.', icon: '⚖️', rule: 'RULE: Collective noun as unit → singular (has)' }
+            ],
+            verbs: ['is', 'has', 'have', 'was', 'has', 'are', 'were', 'do'], // 8 verbs
+            pairs: {
+                'The team ______ working on the project.': 'is',
+                'Everyone ______ completed the training.': 'has',
+                'The managers ______ approved the budget.': 'have',
+                'The list of requirements ______ updated.': 'was',
+                'The jury ______ reached a verdict.': 'has'
+            }
+        },
+
+        // SET 2 - 8 verbs (5 correct, 3 decoys)
+        set2: {
+            name: "SET 2",
+            subjects: [
+                { text: 'The employees ______ attending the meeting.', icon: '👨‍💼', rule: 'RULE: Regular plural → plural verb (are)' },
+                { text: 'The committee ______ made a decision.', icon: '🏛️', rule: 'RULE: Collective noun → singular verb (has)' },
+                { text: 'The directors ______ want to review the proposal.', icon: '🎬', rule: 'RULE: Plural subject → plural verb (do)' },
+                { text: 'The data ______ showing a positive trend.', icon: '📊', rule: 'RULE: Data (business context) → singular (is)' },
+                { text: 'Mathematics ______ my favorite subject.', icon: '🧮', rule: 'RULE: -ics subjects → singular (is)' }
+            ],
+            verbs: ['are', 'has', 'do', 'is', 'is', 'have', 'were', 'does'], // 8 verbs
+            pairs: {
+                'The employees ______ attending the meeting.': 'are',
+                'The committee ______ made a decision.': 'has',
+                'The directors ______ want to review the proposal.': 'do',
+                'The data ______ showing a positive trend.': 'is',
+                'Mathematics ______ my favorite subject.': 'is'
+            }
+        },
+
+        // SET 3 - 8 verbs (5 correct, 3 decoys)
+        set3: {
+            name: "SET 3",
+            subjects: [
+                { text: 'The audience ______ amazed by the performance.', icon: '👩‍🎤', rule: 'RULE: Collective noun (audience) → singular (was)' },
+                { text: 'Somebody ______ left their bag.', icon: '👤', rule: 'RULE: Indefinite pronoun → singular (has)' },
+                { text: 'The criteria ______ very strict.', icon: '📏', rule: 'RULE: Criteria is plural → plural verb (are)' },
+                { text: 'The box of chocolates ______ on the table.', icon: '🍫', rule: 'RULE: Subject = "Box" (singular) → (was)' },
+                { text: 'The crowd ______ cheering loudly.', icon: '👥', rule: 'RULE: Collective noun → singular (is)' }
+            ],
+            verbs: ['was', 'has', 'are', 'was', 'is', 'were', 'have', 'does'], // 8 verbs
+            pairs: {
+                'The audience ______ amazed by the performance.': 'was',
+                'Somebody ______ left their bag.': 'has',
+                'The criteria ______ very strict.': 'are',
+                'The box of chocolates ______ on the table.': 'was',
+                'The crowd ______ cheering loudly.': 'is'
+            }
+        },
+
+        // SET 4 - 8 verbs (5 correct, 3 decoys)
+        set4: {
+            name: "SET 4",
+            subjects: [
+                { text: 'The children ______ playing in the park.', icon: '🧒', rule: 'RULE: Irregular plural → plural verb (are)' },
+                { text: 'The government ______ announced new policies.', icon: '🏛️', rule: 'RULE: Collective noun → singular (has)' },
+                { text: 'Either the parents or the teacher ______ coming.', icon: '👪', rule: 'RULE: Proximity rule → closest = teacher (singular) → (is)' },
+                { text: 'The news ______ at 6 o\'clock.', icon: '📰', rule: 'RULE: News is singular → (is)' },
+                { text: 'Economics ______ require extensive study.', icon: '📈', rule: 'RULE: -ics subject → singular (requires)' }
+            ],
+            verbs: ['are', 'has', 'is', 'is', 'requires', 'have', 'were', 'do'], // 8 verbs
+            pairs: {
+                'The children ______ playing in the park.': 'are',
+                'The government ______ announced new policies.': 'has',
+                'Either the parents or the teacher ______ coming.': 'is',
+                'The news ______ at 6 o\'clock.': 'is',
+                'Economics ______ require extensive study.': 'requires'
+            }
+        }
+    };
+
+    // Current set tracker
+    let currentSet = 'set1';
+    let selectedSubject = null;
+    let selectedSubjectElement = null;
+    let matchesCount = 0;
+    const totalMatches = 5;
+    let matchedPairs = new Set();
+    let wrongPairs = new Set();
+    let lines = [];
+
+    // Initialize with Set 1
+    function initGame() {
+        loadSet('set1');
+    }
+
+    // Shuffle array function
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Load a specific set with jumbled order
+    function loadSet(setKey) {
+        currentSet = setKey;
+        const set = gameSets[setKey];
+        
+        // Clear previous state
+        matchesCount = 0;
+        matchedPairs.clear();
+        wrongPairs.clear();
+        document.getElementById('lineSvg').innerHTML = '';
+        lines = [];
+        
+        // Update set indicator
+        document.getElementById('setIndicator').textContent = set.name;
+        
+        // Shuffle subjects and verbs separately
+        const shuffledSubjects = shuffleArray([...set.subjects]);
+        const shuffledVerbs = shuffleArray([...set.verbs]);
+        
+        // Render jumbled subjects and verbs
+        renderSubjects(shuffledSubjects);
+        renderVerbs(shuffledVerbs);
+        renderHearts();
+        updateCounter();
+        
+        // Clear any selection
+        clearSelection();
+    }
+
+    // Render subjects (sentences with blanks)
+    function renderSubjects(subjects) {
+        const container = document.getElementById('subjectsContainer');
+        container.innerHTML = '';
+        
+        subjects.forEach((subject, index) => {
+            const card = document.createElement('div');
+            card.className = 'card subject-card';
+            card.id = `s_${index}_${Date.now()}`;
+            card.dataset.text = subject.text;
+            card.dataset.rule = subject.rule;
+            card.dataset.icon = subject.icon;
+            
+            // Split the sentence to highlight the blank
+            const parts = subject.text.split('______');
+            
+            card.innerHTML = `
+                <div class="card-icon">${subject.icon}</div>
+                <div class="card-text">
+                    ${parts[0]}<span class="blank-space">______</span>${parts[1] || ''}
+                </div>
+                <div class="connection-dot"></div>
+            `;
+            
+            card.addEventListener('click', () => selectSubject(card));
+            container.appendChild(card);
+        });
+    }
+
+    // Render verbs (8 verbs per set)
+    function renderVerbs(verbs) {
+        const container = document.getElementById('verbsContainer');
+        container.innerHTML = '';
+        
+        verbs.forEach((verb, index) => {
+            const card = document.createElement('div');
+            card.className = 'card verb-card';
+            card.id = `v_${index}_${Date.now()}`;
+            card.dataset.text = verb;
+            
+            card.innerHTML = `
+                <div class="card-text">${verb}</div>
+                <div class="card-icon">💍</div>
+                <div class="connection-dot"></div>
+            `;
+            
+            card.addEventListener('click', () => selectVerb(card));
+            container.appendChild(card);
+        });
+    }
+
+    // Render hearts
+    function renderHearts() {
+        const container = document.getElementById('heartsContainer');
+        container.innerHTML = '';
+        for (let i = 0; i < totalMatches; i++) {
+            const heart = document.createElement('span');
+            heart.className = 'heart-icon';
+            heart.innerHTML = '❤️';
+            container.appendChild(heart);
+        }
+    }
+
+    // Select subject
+    function selectSubject(element) {
+        if (element.classList.contains('matched') || element.classList.contains('wrong-matched')) return;
+        if (selectedSubjectElement) {
+            selectedSubjectElement.classList.remove('selected');
+        }
+        element.classList.add('selected');
+        selectedSubject = element.dataset.text;
+        selectedSubjectElement = element;
+    }
+
+    // Select verb
+    function selectVerb(element) {
+        if (!selectedSubject) {
+            showCry('Please select a sentence first! 👆', null, null);
+            return;
+        }
+        if (element.classList.contains('matched') || element.classList.contains('wrong-matched')) return;
+
+        const verb = element.dataset.text;
+        const set = gameSets[currentSet];
+        const correctVerb = set.pairs[selectedSubject];
+        const isCorrect = (correctVerb === verb);
+        
+        // Create a unique pair ID
+        const pairId = `${selectedSubject}_${verb}`;
+        
+        if (isCorrect) {
+            if (matchedPairs.has(selectedSubject)) {
+                showCry('Already matched! 💔', null, null);
+                clearSelection();
+                return;
+            }
+            
+            // Draw GOLDEN line for correct match
+            drawConnection(selectedSubjectElement, element, 'correct');
+            matchedPairs.add(selectedSubject);
+            matchesCount++;
+            
+            // Find subject data for rule
+            const subjectData = set.subjects.find(s => s.text === selectedSubject);
+            showWedding(selectedSubject, verb, subjectData.rule, subjectData.icon);
+            
+            selectedSubjectElement.classList.add('matched');
+            element.classList.add('matched');
+            updateHearts();
+        } else {
+            // Check if this pair was already tried
+            if (wrongPairs.has(pairId)) {
+                showCry('Already tried this wrong match!', null, null);
+                clearSelection();
+                return;
+            }
+            
+            // Draw RED line for wrong match
+            drawConnection(selectedSubjectElement, element, 'wrong');
+            
+            // Mark this specific pair as wrong and disable both cards
+            wrongPairs.add(pairId);
+            
+            // Add wrong-matched class to both cards
+            selectedSubjectElement.classList.add('wrong-matched');
+            element.classList.add('wrong-matched');
+            
+            // Add wrong badge
+            addWrongBadge(selectedSubjectElement);
+            addWrongBadge(element);
+            
+            // Show wrong match animation and popup
+            showWrongMatchAnimation(selectedSubjectElement, element);
+            showCry(selectedSubject, verb, getHint(selectedSubject, set));
+        }
+        
+        updateCounter();
+        clearSelection();
+        
+        if (matchesCount === totalMatches) {
+            setTimeout(showGrandFinale, 1000);
+        }
+    }
+
+    // Add wrong badge to card
+    function addWrongBadge(element) {
+        const badge = document.createElement('div');
+        badge.className = 'wrong-badge';
+        badge.innerHTML = '❌';
+        element.appendChild(badge);
+    }
+
+    // Draw connection line
+    function drawConnection(subjectEl, verbEl, type) {
+        const svg = document.getElementById('lineSvg');
+        const board = document.getElementById('gameBoard');
+        const subRect = subjectEl.getBoundingClientRect();
+        const verbRect = verbEl.getBoundingClientRect();
+        const boardRect = board.getBoundingClientRect();
+        
+        const x1 = subRect.right - boardRect.left - 10;
+        const y1 = subRect.top + subRect.height/2 - boardRect.top;
+        const x2 = verbRect.left - boardRect.left + 10;
+        const y2 = verbRect.top + verbRect.height/2 - boardRect.top;
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        
+        if (type === 'correct') {
+            line.classList.add('correct-line');
+        } else {
+            line.classList.add('wrong-line');
+        }
+        
+        svg.appendChild(line);
+        lines.push(line);
+    }
+
+    // Show wrong match animation
+    function showWrongMatchAnimation(subjectEl, verbEl) {
+        subjectEl.classList.add('wrong-attempt');
+        verbEl.classList.add('wrong-attempt');
+        
+        setTimeout(() => {
+            subjectEl.classList.remove('wrong-attempt');
+            verbEl.classList.remove('wrong-attempt');
+        }, 500);
+    }
+
+    // Show wedding with RULE
+    function showWedding(subject, verb, rule, icon) {
+        // Big heart animation
+        const heart = document.createElement('div');
+        heart.className = 'big-heart';
+        heart.innerHTML = '💖';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1500);
+
+        // Wedding popup with rule
+        const popup = document.createElement('div');
+        popup.className = 'marriage-popup';
+        
+        popup.innerHTML = `
+            <div style="font-size: 5em;">${icon} + 💍 + ${verb}</div>
+            <h2>💕 CORRECT MATCH! 💕</h2>
+            <div class="rule-box">
+                <strong>📚 GRAMMAR RULE:</strong><br>
+                ${rule}
+            </div>
+            <p style="font-size: 1.5em; color: white; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 30px;">
+                ${subject.replace('______', `<span style="color:gold; font-weight:bold;">${verb}</span>`)}
+            </p>
+            <p style="font-size: 1.3em; color: gold;">Perfect! 🎉</p>
+        `;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 5000);
+    }
+
+    // Show cry popup for wrong matches
+    function showCry(subject, verb, hint) {
+        // Cry heart animation
+        const cryHeart = document.createElement('div');
+        cryHeart.className = 'cry-heart';
+        cryHeart.innerHTML = '😢💔';
+        document.body.appendChild(cryHeart);
+        setTimeout(() => cryHeart.remove(), 1500);
+
+        // Cry popup
+        const popup = document.createElement('div');
+        popup.className = 'cry-popup';
+        
+        if (subject && verb) {
+            popup.innerHTML = `
+                <div class="cry-face">😢💔</div>
+                <h2>WRONG MATCH!</h2>
+                <p style="font-size: 2em; margin: 20px;">${getIcon(subject)} + ${verb}</p>
+                <p style="font-size: 1.5em; color: #87CEEB;">"${subject.replace('______', verb)}"</p>
+                <p style="font-size: 1.8em; color: #ffb6b6;">This doesn't fit!</p>
+                <p style="font-size: 1.3em; color: #ffd700; margin-top: 20px;">${hint || ''}</p>
+                <p style="font-size: 1.2em; color: white; margin-top: 20px;">❌ This pair is now locked!</p>
+                <p style="font-size: 1.1em; color: #87CEEB;">Try another verb! (8 verbs available)</p>
+            `;
+        } else {
+            popup.innerHTML = `
+                <div class="cry-face">😢</div>
+                <h2>OOPS!</h2>
+                <p>${subject || 'Please select a sentence first!'}</p>
+            `;
+        }
+        
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 4000);
+    }
+
+    // Show success popup with match count
+    function showSuccessPopup() {
+        const popup = document.createElement('div');
+        popup.className = 'success-popup';
+        
+        // Calculate percentage
+        const percentage = (matchesCount / totalMatches) * 100;
+        let message = '';
+        
+        if (matchesCount === totalMatches) {
+            message = 'PERFECT! All 5 correct! 🎉';
+        } else if (matchesCount >= 4) {
+            message = 'Great job! Almost there! 🌟';
+        } else if (matchesCount >= 3) {
+            message = 'Good effort! Keep going! 💪';
+        } else {
+            message = 'Keep trying! You can do it! ✨';
+        }
+        
+        popup.innerHTML = `
+            <h2>✅ YOUR SCORE ✅</h2>
+            <div style="font-size: 5em; margin: 20px;">${'❤️'.repeat(matchesCount || 1)}</div>
+            <p style="font-size: 3.5em; color: gold; margin: 20px;">${matchesCount} / ${totalMatches}</p>
+            <p style="font-size: 2em; color: white;">${percentage}% Correct</p>
+            <p style="font-size: 1.5em; color: #ffd700; margin-top: 20px;">${message}</p>
+            <p style="font-size: 1.2em; color: white; margin-top: 30px;">${gameSets[currentSet].name} • 8 verbs available</p>
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Add confetti for perfect score
+        if (matchesCount === totalMatches) {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-50px';
+                    confetti.style.fontSize = '30px';
+                    confetti.style.zIndex = '10002';
+                    confetti.style.animation = `fall ${2 + Math.random() * 3}s linear forwards`;
+                    confetti.innerHTML = ['🎉', '🎊', '✨', '💕', '💖', '🎈'][Math.floor(Math.random() * 6)];
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 100);
+            }
+        }
+        
+        setTimeout(() => popup.remove(), 5000);
+    }
+
+    // Show grand finale when all 5 matches are correct
+    function showGrandFinale() {
+        const set = gameSets[currentSet];
+        const finale = document.createElement('div');
+        finale.className = 'finale-popup';
+        
+        let sentences = '';
+        set.subjects.forEach(subject => {
+            sentences += `<div style="font-size: 1.3em; margin: 10px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 20px;">
+                ${subject.icon} ${subject.text.replace('______', `<span style="color:gold; font-weight:bold;">${set.pairs[subject.text]}</span>`)}
+            </div>`;
+        });
+
+        finale.innerHTML = `
+            <h1>🎊 SET COMPLETE! 🎊</h1>
+            <div style="max-height: 400px; overflow-y: auto; margin: 20px; padding: 10px;">
+                ${sentences}
+            </div>
+            <p style="font-size: 2.2em; color: white;">${set.name} Complete!</p>
+            <p style="font-size: 1.8em; color: gold;">All 5 sentences correctly filled!</p>
+            <p style="font-size: 1.5em; color: #87CEEB;">Found the right verbs among 8 options!</p>
+            <p style="font-size: 1.5em; color: white; margin-top: 20px;">Praveen • Host</p>
+        `;
+        document.body.appendChild(finale);
+        
+        // Confetti
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-50px';
+                confetti.style.fontSize = '40px';
+                confetti.style.zIndex = '10002';
+                confetti.style.animation = `fall ${3 + Math.random() * 3}s linear forwards`;
+                confetti.innerHTML = ['🎉', '🎊', '✨', '💕', '💖', '🎈', '🥂'][Math.floor(Math.random() * 7)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }, i * 70);
+        }
+        
+        setTimeout(() => finale.remove(), 8000);
+    }
+
+    // Get icon for subject
+    function getIcon(subjectText) {
+        const set = gameSets[currentSet];
+        const subject = set.subjects.find(s => s.text === subjectText);
+        return subject ? subject.icon : '❓';
+    }
+
+    // Get hint for wrong matches
+    function getHint(subject, set) {
+        const correctVerb = set.pairs[subject];
+        return `💡 Hint: This sentence needs "${correctVerb}"`;
+    }
+
+    // Clear selection
+    function clearSelection() {
+        if (selectedSubjectElement) {
+            selectedSubjectElement.classList.remove('selected');
+        }
+        selectedSubject = null;
+        selectedSubjectElement = null;
+    }
+
+    // Update hearts
+    function updateHearts() {
+        const hearts = document.querySelectorAll('.heart-icon');
+        hearts.forEach((heart, index) => {
+            if (index < matchesCount) {
+                heart.classList.add('filled');
+            }
+        });
+    }
+
+    // Update counter
+    function updateCounter() {
+        document.getElementById('matchCounter').textContent = `${matchesCount} / ${totalMatches}`;
+    }
+
+    // Next set function
+    function nextSet() {
+        if (currentSet === 'set1') {
+            loadSet('set2');
+        } else if (currentSet === 'set2') {
+            loadSet('set3');
+        } else if (currentSet === 'set3') {
+            loadSet('set4');
+        } else {
+            loadSet('set1');
+        }
+        
+        // Show notification
+        const popup = document.createElement('div');
+        popup.className = 'cry-popup';
+        popup.innerHTML = `<h2>🔄 NEXT SET 🔄</h2><p style="color:white">${gameSets[currentSet].name}</p><p style="color:#ffd700">5 sentences • 8 verbs • Good luck!</p>`;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 2000);
+    }
+
+    // Fall animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Make functions global
+    window.nextSet = nextSet;
+    window.showSuccessPopup = showSuccessPopup;
+
+    // Start
+    document.addEventListener('DOMContentLoaded', initGame);
+</script>
+</body>
+</html>
